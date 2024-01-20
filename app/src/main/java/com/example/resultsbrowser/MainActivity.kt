@@ -11,12 +11,14 @@ import androidx.compose.ui.Modifier
 import com.example.resultsbrowser.ui.screens.SportsResultsScreen
 import com.example.resultsbrowser.ui.theme.ResultsBrowserTheme
 import com.example.resultsbrowser.viewmodels.SportsResultsViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     var isReload = false
-    var isLoading = false
 
+    private val sportsResultsViewModel: SportsResultsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +31,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     SportsResultsScreen(
                         isReload = isReload,
-                        isLoading = isLoading
+                        sportsResultsViewModel = sportsResultsViewModel
                     )
                 }
             }

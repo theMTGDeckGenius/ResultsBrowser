@@ -1,41 +1,40 @@
 package com.example.resultsbrowser.network
 
-import android.util.Log
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.resultsbrowser.ResultsBrowserApplication
 import com.example.resultsbrowser.model.SportsResults
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
 import javax.inject.Inject
+import kotlin.random.Random
 
-class SportsResultsRepository {
+class SportsResultsRepository @Inject constructor() {
 
-    //todo replace with object for results
-    // or delete
-    var postInfoMutableList: MutableLiveData<SportsResults> = MutableLiveData()
+    private var _sportsResultsMutableList: MutableLiveData<SportsResults?> = MutableLiveData()
+    var sportsResultsMutableList: LiveData<SportsResults?> = _sportsResultsMutableList
 
-    @Inject
-    lateinit var retrofit: Retrofit
+    val isLoading = MutableLiveData<Boolean>()
 
-    fun fetchPostInfoList(): LiveData<SportsResults> {
+    suspend fun fetchPostInfoList() {
+        isLoading.value = true
+        val retrofit = ResultsBrowserApplication.retrofit
         val apiService: APIService = retrofit.create(APIService::class.java)
-        val postListInfo: Call<SportsResults> = apiService.getLatest()
-        postListInfo.enqueue(object : Callback<SportsResults> {
-            override fun onFailure(call: Call<SportsResults>, t: Throwable) {
-                Log.d("RetroRepository", "Failed:::" + t.message)
-            }
+        val response = apiService.getLatest()
 
-            override fun onResponse(call: Call<SportsResults>, response: Response<SportsResults>) {
-                //TODO implement error handeling
-                val postInfoList = response.body()
-                postInfoMutableList.value = postInfoList
+        //TODO implement error handling
+        val code = response.code()
+        val sportsResults = response.body()
+        _sportsResultsMutableList.value = sportsResults
+        // This section is just to properly show off the loading transitions
+        // The delay will be a random amount of time between 2 seconds and 5 seconds
+        Handler(Looper.getMainLooper()).postDelayed(
+            {
+                isLoading.value = false
+            },
+            Random.nextLong(2000, 5000)
+        )
 
-            }
-        })
-
-        return postInfoMutableList
 
     }
 

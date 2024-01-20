@@ -80,7 +80,9 @@ dependencies {
     kspAndroidTest("com.google.dagger:hilt-compiler:2.50")
     testImplementation("com.google.dagger:hilt-android-testing:2.50")
     kspTest("com.google.dagger:hilt-compiler:2.50")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
+    implementation("androidx.compose.runtime:runtime-livedata:1.5.4")
 
-    ksp("com.google.dagger:dagger-compiler:2.48")
-    ksp("com.google.dagger:hilt-compiler:2.48")
+    ksp("com.google.dagger:dagger-compiler:2.50")
+    ksp("com.google.dagger:hilt-compiler:2.50")
 }

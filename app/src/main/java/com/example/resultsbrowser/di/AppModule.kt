@@ -18,5 +18,4 @@ class AppModule {
     fun provideApplication(@ApplicationContext app: Context): ResultsBrowserApplication {
         return app as ResultsBrowserApplication
     }
-
 }
