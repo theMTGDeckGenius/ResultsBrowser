@@ -30,7 +30,6 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     SportsResultsScreen(
-                        isReload = isReload,
                         sportsResultsViewModel = sportsResultsViewModel
                     )
                 }
