@@ -19,7 +19,6 @@ class ResultsBrowserApplication : Application() {
         super.onCreate()
 
         retrofit = initDaggerComponent()
-
     }
 
     private fun initDaggerComponent(): Retrofit {

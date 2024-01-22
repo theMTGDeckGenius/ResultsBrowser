@@ -44,7 +44,7 @@ class SportsResultsViewModel @Inject constructor(
                 sportsResultsRepository.fetchPostInfoList()
                 convertResultsForDisplay()
             } catch (throwable: Throwable) {
-                //TODO handle error
+                Log.e("SportsResultsViewModel", "requestSportsResults: " + throwable.message)
             }
         }
     }

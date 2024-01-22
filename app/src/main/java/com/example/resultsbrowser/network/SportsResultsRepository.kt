@@ -23,9 +23,11 @@ class SportsResultsRepository @Inject constructor() {
         val response = apiService.getLatest()
 
         //TODO implement error handling
-        val code = response.code()
-        val sportsResults = response.body()
-        _sportsResultsMutableList.value = sportsResults
+        if (response.isSuccessful) {
+            val sportsResults = response.body()
+            _sportsResultsMutableList.value = sportsResults
+        }
+
         // This section is just to properly show off the loading transitions
         // The delay will be a random amount of time between 2 seconds and 5 seconds
         Handler(Looper.getMainLooper()).postDelayed(
@@ -39,6 +41,8 @@ class SportsResultsRepository @Inject constructor() {
     fun createBigList() {
         isLoading.value = true
 
+        // This section is just to properly show off the loading transitions
+        // The delay will be a random amount of time between 2 seconds and 5 seconds
         Handler(Looper.getMainLooper()).postDelayed(
             {
                 isLoading.value = false

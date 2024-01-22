@@ -15,7 +15,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
     private val sportsResultsViewModel: SportsResultsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
