@@ -6,30 +6,30 @@ import com.google.gson.annotations.SerializedName
 data class SportsResults(
     @SerializedName("f1Results") var f1Results: ArrayList<F1Results> = arrayListOf(),
     @SerializedName("nbaResults") var nbaResults: ArrayList<NbaResults> = arrayListOf(),
-    @SerializedName("Tennis") var tennis: ArrayList<Tennis> = arrayListOf()
+    @SerializedName("Tennis") var tennisResults: ArrayList<TennisResults> = arrayListOf()
 )
 
 data class F1Results(
-    @SerializedName("publicationDate") var publicationDate: String? = null,
-    @SerializedName("seconds") var seconds: Double? = null,
-    @SerializedName("tournament") var tournament: String? = null,
-    @SerializedName("winner") var winner: String? = null
+    @SerializedName("publicationDate") var publicationDate: String = "",
+    @SerializedName("seconds") var seconds: Double = 0.0,
+    @SerializedName("tournament") var tournament: String = "",
+    @SerializedName("winner") var winner: String = ""
 )
 
 data class NbaResults(
-    @SerializedName("gameNumber") var gameNumber: Int? = null,
-    @SerializedName("looser") var looser: String? = null,
-    @SerializedName("mvp") var mvp: String? = null,
-    @SerializedName("publicationDate") var publicationDate: String? = null,
-    @SerializedName("tournament") var tournament: String? = null,
-    @SerializedName("winner") var winner: String? = null
+    @SerializedName("gameNumber") var gameNumber: Int = 0,
+    @SerializedName("looser") var looser: String = "",
+    @SerializedName("mvp") var mvp: String = "",
+    @SerializedName("publicationDate") var publicationDate: String = "",
+    @SerializedName("tournament") var tournament: String = "",
+    @SerializedName("winner") var winner: String = ""
 
 )
 
-data class Tennis(
-    @SerializedName("looser") var looser: String? = null,
-    @SerializedName("numberOfSets") var numberOfSets: Int? = null,
-    @SerializedName("publicationDate") var publicationDate: String? = null,
-    @SerializedName("tournament") var tournament: String? = null,
-    @SerializedName("winner") var winner: String? = null
+data class TennisResults(
+    @SerializedName("looser") var looser: String = "",
+    @SerializedName("numberOfSets") var numberOfSets: Int = 0,
+    @SerializedName("publicationDate") var publicationDate: String = "",
+    @SerializedName("tournament") var tournament: String = "",
+    @SerializedName("winner") var winner: String = ""
 )

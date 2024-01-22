@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Results Browser</string>
+
+    <string name="fOneResultsMessage">##WINNER## wins ##TOURNAMENT## by ##SECONDS## seconds.</string>
+    <string name="tennisResultsMessage">##TOURNAMENT##: ##WINNER## wins against ##LOOSER##in ##SETS## sets.</string>
+    <string name="nbaResultsMessage">##MVP## leads ##WINNER## to game ##GAME_NUMBER## win in the ##TOURNAMENT##.</string>
 </resources>

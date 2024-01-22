@@ -34,9 +34,16 @@ class SportsResultsRepository @Inject constructor() {
             },
             Random.nextLong(2000, 5000)
         )
-
-
     }
 
+    fun createBigList() {
+        isLoading.value = true
 
+        Handler(Looper.getMainLooper()).postDelayed(
+            {
+                isLoading.value = false
+            },
+            Random.nextLong(2000, 5000)
+        )
+    }
 }

@@ -5,7 +5,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.resultsbrowser.R
+import com.example.resultsbrowser.ResultsBrowserApplication
 import com.example.resultsbrowser.model.DisplayedResults
+import com.example.resultsbrowser.model.F1Results
+import com.example.resultsbrowser.model.NbaResults
+import com.example.resultsbrowser.model.TennisResults
 import com.example.resultsbrowser.network.SportsResultsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -16,21 +21,18 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SportsResultsViewModel @Inject constructor(
-    private val sportsResultsRepository: SportsResultsRepository
+    private val sportsResultsRepository: SportsResultsRepository,
+    private val application: ResultsBrowserApplication
 ) : ViewModel() {
 
-    //TODO Change to converted display data and store here
-
-    val _allSportsResultsLiveData: MutableLiveData<ArrayList<DisplayedResults>> =
+    val allSportsResultsLiveData: MutableLiveData<ArrayList<DisplayedResults>> =
         MutableLiveData<ArrayList<DisplayedResults>>(
             ArrayList()
         )
-    val _displaySportsResultsLiveData: MutableLiveData<ArrayList<DisplayedResults>> =
+    val displaySportsResultsLiveData: MutableLiveData<ArrayList<DisplayedResults>> =
         MutableLiveData<ArrayList<DisplayedResults>>(
             ArrayList()
         )
-
-//    val sportsResultsLiveData: LiveData<DisplayedResults> = _sportsResultsLiveData
 
     fun getIsLoading(): LiveData<Boolean> {
         return sportsResultsRepository.isLoading
@@ -40,7 +42,6 @@ class SportsResultsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 sportsResultsRepository.fetchPostInfoList()
-
                 convertResultsForDisplay()
             } catch (throwable: Throwable) {
                 //TODO handle error
@@ -48,78 +49,147 @@ class SportsResultsViewModel @Inject constructor(
         }
     }
 
-    fun convertResultsForDisplay() {
+    fun fillUpList() {
+        viewModelScope.launch {
+            sportsResultsRepository.createBigList()
+            convertResultsForDisplayBigList()
+        }
+    }
+
+    private fun convertResultsForDisplay() {
         val data = sportsResultsRepository.sportsResultsMutableList.value
         val formatter = SimpleDateFormat("MMM dd, yyyy hh:mm:ss a", Locale.ENGLISH)
-        _allSportsResultsLiveData.value?.clear()
-        _displaySportsResultsLiveData.value?.clear()
+        allSportsResultsLiveData.value?.clear()
+        displaySportsResultsLiveData.value?.clear()
 
         val f1Data = data?.f1Results
         if (f1Data != null) {
             for (item in f1Data) {
-                val displayMessage = item.winner.plus(" wins ")
-                    .plus(item.tournament)
-                    .plus(" by ")
-                    .plus(item.seconds)
-                    .plus(" seconds")
-                val displayedResults = DisplayedResults(
-                    publicationDate = item.publicationDate?.let { formatter.parse(it) },
-                    displayMessage = displayMessage
-                )
-
-                _allSportsResultsLiveData.value?.add(displayedResults)
+                val displayedResults = processF1results(item, formatter)
+                allSportsResultsLiveData.value?.add(displayedResults)
             }
         }
 
-        val tennisData = data?.tennis
+        val tennisData = data?.tennisResults
         if (tennisData != null) {
             for (item in tennisData) {
-                val displayMessage = item.tournament.plus(": ")
-                    .plus(item.winner)
-                    .plus(" wins against ")
-                    .plus(item.looser)
-                    .plus(" in ")
-                    .plus(item.numberOfSets)
-                    .plus(" sets")
-                val displayedResults = DisplayedResults(
-                    publicationDate = item.publicationDate?.let { formatter.parse(it) },
-                    displayMessage = displayMessage
-                )
-
-                _allSportsResultsLiveData.value?.add(displayedResults)
+                val displayedResults = processTennis1results(item, formatter)
+                allSportsResultsLiveData.value?.add(displayedResults)
             }
         }
 
         val nbaData = data?.nbaResults
         if (nbaData != null) {
             for (item in nbaData) {
-                val displayMessage = item.mvp.plus(" leads ")
-                    .plus(item.winner)
-                    .plus(" to game ")
-                    .plus(item.gameNumber)
-                    .plus(" win in the ")
-                    .plus(item.tournament)
-                val displayedResults = DisplayedResults(
-                    publicationDate = item.publicationDate?.let { formatter.parse(it) },
-                    displayMessage = displayMessage
-                )
-
-                _allSportsResultsLiveData.value?.add(displayedResults)
+                val displayedResults = processNbaResults(item, formatter)
+                allSportsResultsLiveData.value?.add(displayedResults)
             }
         }
-        _allSportsResultsLiveData.value?.sortByDescending { it.publicationDate }
+        allSportsResultsLiveData.value?.sortByDescending { it.publicationDate }
         val mostRecentCalendar: Calendar = Calendar.getInstance()
-        mostRecentCalendar.time = _allSportsResultsLiveData.value?.get(0)?.publicationDate!!
+        mostRecentCalendar.time = allSportsResultsLiveData.value?.get(0)?.publicationDate!!
 
-        _allSportsResultsLiveData.value?.forEach() { displayedResults ->
+        allSportsResultsLiveData.value?.forEach() { displayedResults ->
             val calendar: Calendar = Calendar.getInstance()
             displayedResults.publicationDate?.let { calendar.time = it }
             if (calendar.get(Calendar.DAY_OF_YEAR) == mostRecentCalendar.get(Calendar.DAY_OF_YEAR)) {
-                _displaySportsResultsLiveData.value?.add(displayedResults)
+                displaySportsResultsLiveData.value?.add(displayedResults)
             }
         }
 
+        Log.d("SportsResutsViewModel", "Finished parsing display list")
+    }
+
+    private fun convertResultsForDisplayBigList() {
+        val data = sportsResultsRepository.sportsResultsMutableList.value
+        val formatter = SimpleDateFormat("MMM dd, yyyy hh:mm:ss a", Locale.ENGLISH)
+        displaySportsResultsLiveData.value?.clear()
+
+        val f1Data = data?.f1Results
+        if (f1Data != null) {
+            for (item in f1Data) {
+                val displayedResults = processF1results(item, formatter)
+
+                displaySportsResultsLiveData.value?.add(displayedResults)
+                displaySportsResultsLiveData.value?.add(displayedResults)
+                displaySportsResultsLiveData.value?.add(displayedResults)
+                displaySportsResultsLiveData.value?.add(displayedResults)
+                displaySportsResultsLiveData.value?.add(displayedResults)
+                displaySportsResultsLiveData.value?.add(displayedResults)
+            }
+        }
+
+        val tennisData = data?.tennisResults
+        if (tennisData != null) {
+            for (item in tennisData) {
+                val displayedResults = processTennis1results(item, formatter)
+
+                displaySportsResultsLiveData.value?.add(displayedResults)
+                displaySportsResultsLiveData.value?.add(displayedResults)
+                displaySportsResultsLiveData.value?.add(displayedResults)
+                displaySportsResultsLiveData.value?.add(displayedResults)
+                displaySportsResultsLiveData.value?.add(displayedResults)
+                displaySportsResultsLiveData.value?.add(displayedResults)
+            }
+        }
+
+        val nbaData = data?.nbaResults
+        if (nbaData != null) {
+            for (item in nbaData) {
+                val displayedResults = processNbaResults(item, formatter)
+
+                displaySportsResultsLiveData.value?.add(displayedResults)
+                displaySportsResultsLiveData.value?.add(displayedResults)
+                displaySportsResultsLiveData.value?.add(displayedResults)
+                displaySportsResultsLiveData.value?.add(displayedResults)
+                displaySportsResultsLiveData.value?.add(displayedResults)
+            }
+        }
 
         Log.d("SportsResutsViewModel", "Finished parsing display list")
+    }
+
+    private fun processF1results(item: F1Results, formatter: SimpleDateFormat): DisplayedResults {
+        val displayMessage = application.resources.getString(R.string.fOneResultsMessage)
+            .replace("##WINNER##", item.winner)
+            .replace("##TOURNAMENT##", item.tournament)
+            .replace("##SECONDS##", item.seconds.toString())
+
+        return DisplayedResults(
+            publicationDate = formatter.parse(item.publicationDate),
+            displayMessage = displayMessage,
+            f1Results = item
+        )
+    }
+
+    private fun processNbaResults(item: NbaResults, formatter: SimpleDateFormat): DisplayedResults {
+        val displayMessage = application.resources.getString(R.string.nbaResultsMessage)
+            .replace("##MVP##", item.mvp)
+            .replace("##WINNER##", item.winner)
+            .replace("##GAME_NUMBER##", item.gameNumber.toString())
+            .replace("##TOURNAMENT##", item.tournament)
+
+        return DisplayedResults(
+            publicationDate = formatter.parse(item.publicationDate),
+            displayMessage = displayMessage,
+            nbaResults = item
+        )
+    }
+
+    private fun processTennis1results(
+        item: TennisResults,
+        formatter: SimpleDateFormat
+    ): DisplayedResults {
+        val displayMessage = application.resources.getString(R.string.tennisResultsMessage)
+            .replace("##TOURNAMENT##", item.tournament)
+            .replace("##WINNER##", item.winner)
+            .replace("##LOOSER##", item.looser)
+            .replace("##SETS##", item.numberOfSets.toString())
+
+        return DisplayedResults(
+            publicationDate = formatter.parse(item.publicationDate),
+            displayMessage = displayMessage,
+            tennisResults = item
+        )
     }
 }

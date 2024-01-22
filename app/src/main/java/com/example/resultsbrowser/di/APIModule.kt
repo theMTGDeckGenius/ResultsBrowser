@@ -16,7 +16,6 @@ import javax.inject.Singleton
 class APIModule {
     private var baseURL: String = "https://restest.free.beeceptor.com/results/"
 
-
     @Singleton
     @Provides
     fun provideOKHttpClient(): OkHttpClient {
@@ -24,14 +23,12 @@ class APIModule {
             .readTimeout(1200, TimeUnit.SECONDS)
             .connectTimeout(1200, TimeUnit.SECONDS)
             .build()
-
     }
 
     @Singleton
     @Provides
     fun provideGSON(): GsonConverterFactory {
         return GsonConverterFactory.create()
-
     }
 
     @Singleton
@@ -40,7 +37,6 @@ class APIModule {
         gsonConverterFactory: GsonConverterFactory,
         okHttpClient: OkHttpClient
     ): Retrofit {
-
         return Retrofit.Builder()
             .baseUrl(baseURL)
             .addConverterFactory(gsonConverterFactory)
@@ -52,5 +48,4 @@ class APIModule {
     fun provideRetroRepository(): SportsResultsRepository {
         return SportsResultsRepository()
     }
-
 }
